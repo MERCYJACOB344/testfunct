@@ -10,8 +10,9 @@ on:
   workflow_dispatch:
 
 env:
-  AZURE_FUNCTIONAPP_PACKAGE_PATH: '.' # set this to the path to your web app project, defaults to the repository root
-  NODE_VERSION: '20.x' # set this to the node version to use (supports 8.x, 10.x, 12.x)
+  AZURE_FUNCTIONAPP_PACKAGE_PATH: '.' # Path to your web app project
+  NODE_VERSION: '20.x' # Node version to use
+  NODE_OPTIONS: "--max-old-space-size=8192" # Increase Node.js memory limit
 
 jobs:
   build:
@@ -38,7 +39,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: node-app
-          path: .
+          path: |
+            ./path/to/important/files  # Adjust this path to include only necessary files
 
   deploy:
     runs-on: windows-latest
@@ -47,7 +49,7 @@ jobs:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
     permissions:
-      id-token: write #This is required for requesting the JWT
+      id-token: write # This is required for requesting the JWT
 
     steps:
       - name: Download artifact from build job
@@ -69,4 +71,5 @@ jobs:
           app-name: 'testsurveyFunctions'
           slot-name: 'Production'
           package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
+
           
